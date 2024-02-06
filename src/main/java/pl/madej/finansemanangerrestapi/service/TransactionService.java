@@ -10,6 +10,8 @@ import pl.madej.finansemanangerrestapi.payload.TransactionResponse;
 import pl.madej.finansemanangerrestapi.repository.TransactionRepository;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,5 +46,17 @@ public class TransactionService {
         return TransactionMapper.INSTANCE.toTransactionResponse(savedTransaction);
     }
 
+    public TransactionResponse getTransaction(TransactionRequest transactionRequest) {
+        Transaction transaction = transactionRepository.findById(transactionRequest.id())
+                .orElseThrow(() -> new RuntimeException("Transaction not found with id " + transactionRequest.id()));
 
+        return TransactionMapper.INSTANCE.toTransactionResponse(transaction);
+    }
+
+    public List<TransactionResponse> getAllTransactions() {
+        return transactionRepository.findAll()
+                .stream()
+                .map(transaction -> TransactionMapper.INSTANCE.toTransactionResponse(transaction))
+                .collect(Collectors.toList());
+    }
 }
