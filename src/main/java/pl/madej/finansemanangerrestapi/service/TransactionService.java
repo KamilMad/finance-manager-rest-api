@@ -23,4 +23,12 @@ public class TransactionService {
 
         return transactionRepository.save(transaction).getId();
     }
+
+    public void deleteTransaction(Long transactionId) {
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found with id " + transactionId));
+        transactionRepository.delete(transaction);
+    }
+
+    
 }
