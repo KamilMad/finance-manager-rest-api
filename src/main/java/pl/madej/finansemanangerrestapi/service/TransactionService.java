@@ -46,9 +46,9 @@ public class TransactionService {
         return TransactionMapper.INSTANCE.toTransactionResponse(savedTransaction);
     }
 
-    public TransactionResponse getTransaction(TransactionRequest transactionRequest) {
-        Transaction transaction = transactionRepository.findById(transactionRequest.id())
-                .orElseThrow(() -> new RuntimeException("Transaction not found with id " + transactionRequest.id()));
+    public TransactionResponse getTransaction(Long transactionId) {
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found with id " + transactionId));
 
         return TransactionMapper.INSTANCE.toTransactionResponse(transaction);
     }
