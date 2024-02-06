@@ -1,9 +1,6 @@
 package pl.madej.finansemanangerrestapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +24,8 @@ public class Transaction {
     private TransactionType transactionType;
     private Category category;
     private Date date;
+
+    @ManyToOne
     private User User;
 
 }

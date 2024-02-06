@@ -1,15 +1,13 @@
 package pl.madej.finansemanangerrestapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -26,6 +24,10 @@ public class User {
     private String password;
     private String email;
     private Set<Role> roles;
+
+    @ManyToOne
     private List<Transaction> transactions;
+
+    @ManyToOne
     private List<Investment> investments;
 }
