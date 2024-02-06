@@ -25,9 +25,9 @@ public class User {
     private String email;
     private Set<Role> roles;
 
-    @ManyToOne
+    @OneToMany
     private List<Transaction> transactions;
 
-    @ManyToOne
+    @OneToMany
     private List<Investment> investments;
 }

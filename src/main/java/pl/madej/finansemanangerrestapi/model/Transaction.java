@@ -21,11 +21,13 @@ public class Transaction {
 
     private String description;
     private Double amount;
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
+    @ManyToOne
     private Category category;
     private Date date;
-
     @ManyToOne
+    @JoinColumn(name = "category_id")
     private User User;
 
 }
