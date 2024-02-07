@@ -10,18 +10,17 @@ import pl.madej.finansemanangerrestapi.mapper.TransactionMapper;
 import pl.madej.finansemanangerrestapi.model.Category;
 import pl.madej.finansemanangerrestapi.model.Transaction;
 import pl.madej.finansemanangerrestapi.model.TransactionType;
+import pl.madej.finansemanangerrestapi.model.User;
 import pl.madej.finansemanangerrestapi.payload.TransactionRequest;
 import pl.madej.finansemanangerrestapi.repository.TransactionRepository;
 
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TransactionServiceTest {
@@ -66,5 +65,41 @@ public class TransactionServiceTest {
                         trans.getUser() != null
         ));
     }
+
+    @Test
+    public void deleteTransactionSuccessfully() {
+        long transactionId = 1L;
+
+        Transaction transaction = new Transaction();
+        transaction.setId(1L);
+        transaction.setDescription("Grocery shopping");
+        transaction.setAmount(50.0);
+        transaction.setTransactionType(TransactionType.EXPENSE);
+        transaction.setCategory(Category.Groceries);
+        transaction.setDate(LocalDateTime.now());
+        transaction.setUser(new User());
+
+        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
+
+        transactionService.deleteTransaction(transactionId);
+
+        verify(transactionRepository, times(1)).findById(transactionId);
+        verify(transactionRepository, times(1)).delete(transaction);
+    }
+
+    @Test
+    public void testDeleteTransactionTransactionNotFound() {
+        // Given
+        Long transactionId = 1L;
+
+        // Mock the behavior of the repository
+        when(transactionRepository.findById(transactionId)).thenReturn(Optional.empty());
+
+        // When and Then
+        assertThrows(RuntimeException.class, () -> transactionService.deleteTransaction(transactionId));
+        verify(transactionRepository, times(1)).findById(transactionId);
+        verify(transactionRepository, never()).delete(any());
+    }
+
 
 }
