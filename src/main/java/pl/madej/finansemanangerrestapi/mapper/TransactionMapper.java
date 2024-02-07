@@ -8,8 +8,9 @@ import pl.madej.finansemanangerrestapi.model.Transaction;
 import pl.madej.finansemanangerrestapi.payload.TransactionRequest;
 import pl.madej.finansemanangerrestapi.payload.TransactionResponse;
 
-@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface TransactionMapper {
+
     TransactionMapper INSTANCE = Mappers.getMapper(TransactionMapper.class);
 
     Transaction toTransaction(TransactionRequest transactionRequest);

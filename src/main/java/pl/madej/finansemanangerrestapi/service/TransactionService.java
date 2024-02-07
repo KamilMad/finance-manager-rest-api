@@ -1,15 +1,15 @@
 package pl.madej.finansemanangerrestapi.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.madej.finansemanangerrestapi.mapper.TransactionMapper;
 import pl.madej.finansemanangerrestapi.model.Transaction;
+import pl.madej.finansemanangerrestapi.model.User;
 import pl.madej.finansemanangerrestapi.payload.TransactionRequest;
 import pl.madej.finansemanangerrestapi.payload.TransactionResponse;
 import pl.madej.finansemanangerrestapi.repository.TransactionRepository;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,8 +22,8 @@ public class TransactionService {
     public Long addTransaction(TransactionRequest transactionRequest) {
 
         Transaction transaction = TransactionMapper.INSTANCE.toTransaction(transactionRequest);
-        transaction.setDate(new Date());
-        //transaction.setUser(user);
+        transaction.setDate(LocalDateTime.now());
+        transaction.setUser(new User());
 
         return transactionRepository.save(transaction).getId();
     }
