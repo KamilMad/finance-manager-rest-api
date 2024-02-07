@@ -6,12 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.madej.finansemanangerrestapi.mapper.TransactionMapper;
 import pl.madej.finansemanangerrestapi.model.Category;
 import pl.madej.finansemanangerrestapi.model.Transaction;
 import pl.madej.finansemanangerrestapi.model.TransactionType;
 import pl.madej.finansemanangerrestapi.model.User;
 import pl.madej.finansemanangerrestapi.payload.TransactionRequest;
+import pl.madej.finansemanangerrestapi.payload.TransactionResponse;
 import pl.madej.finansemanangerrestapi.repository.TransactionRepository;
 
 
@@ -99,6 +99,46 @@ public class TransactionServiceTest {
         assertThrows(RuntimeException.class, () -> transactionService.deleteTransaction(transactionId));
         verify(transactionRepository, times(1)).findById(transactionId);
         verify(transactionRepository, never()).delete(any());
+    }
+
+    @Test
+    public void getTransactionSuccessfully() {
+        long transactionId = 1L;
+
+        Transaction transaction = new Transaction();
+        transaction.setId(1L);
+        transaction.setDescription("Grocery shopping");
+        transaction.setAmount(50.0);
+        transaction.setTransactionType(TransactionType.EXPENSE);
+        transaction.setCategory(Category.Groceries);
+        transaction.setDate(LocalDateTime.now());
+        transaction.setUser(new User());
+
+        TransactionResponse transactionResponse = new TransactionResponse(
+                transaction.getId(),transaction.getDescription(), transaction.getAmount(), transaction.getTransactionType(), transaction.getCategory());
+
+        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
+
+        TransactionResponse obtainedTransactionResponse = transactionService.getTransaction(transactionId);
+
+        verify(transactionRepository, times(1)).findById(transactionId);
+        assertEquals(transaction.getId(), transactionResponse.id());
+        assertNotNull(transactionResponse);
+        assertEquals(transaction.getId(), transactionResponse.id());
+        assertEquals(transaction.getDescription(), transactionResponse.description());
+        assertEquals(transaction.getAmount(), transactionResponse.amount());
+        assertEquals(transaction.getCategory(), transactionResponse.category());
+        assertEquals(transaction.getTransactionType(), transactionResponse.transactionType());
+    }
+
+    @Test
+    void getTransactionTransactionNotFound() {
+        long transactionId = 1L;
+
+        when(transactionRepository.findById(transactionId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class,() -> transactionService.getTransaction(transactionId));
+        verify(transactionRepository, times(1)).findById(transactionId);
     }
 
 
