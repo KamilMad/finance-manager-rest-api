@@ -33,16 +33,18 @@ public class TransactionServiceTest {
     @InjectMocks
     private TransactionService transactionService;
 
+    private Transaction transaction;
+    private Transaction transaction2;
+    private TransactionRequest transactionRequest;
     @BeforeEach
     public void init() {
-
+        transaction = new Transaction(1L, "Description1", 100.0, TransactionType.EXPENSE, Category.Groceries, LocalDateTime.now(), new User());
+        transaction2 = new Transaction(2L, "Description2", 200.0, TransactionType.INCOME, Category.Groceries, LocalDateTime.now(), new User());
+        transactionRequest = new TransactionRequest(1L, "Description", 100.0, TransactionType.EXPENSE, Category.Groceries);
     }
 
     @Test
     public void addTransactionSuccessfully() {
-        TransactionRequest transactionRequest = new TransactionRequest(
-                1L, "desc", 100.0, TransactionType.EXPENSE, Category.Groceries
-        );
         when(transactionRepository.save(any(Transaction.class))).thenAnswer(i -> {
             Transaction t = i.getArgument(0);
             t.setId(1L); // Simulate setting ID upon saving
@@ -55,7 +57,7 @@ public class TransactionServiceTest {
         assertEquals(1L, savedTransactionId.longValue());
 
         verify(transactionRepository).save(argThat(trans ->
-                "desc".equals(trans.getDescription()) &&
+                "Description".equals(trans.getDescription()) &&
                         100.0 == trans.getAmount() &&
                         TransactionType.EXPENSE == trans.getTransactionType() &&
                         Category.Groceries == trans.getCategory() && // Now directly comparing enum value
@@ -67,15 +69,6 @@ public class TransactionServiceTest {
     @Test
     public void deleteTransactionSuccessfully() {
         long transactionId = 1L;
-
-        Transaction transaction = new Transaction();
-        transaction.setId(1L);
-        transaction.setDescription("Grocery shopping");
-        transaction.setAmount(50.0);
-        transaction.setTransactionType(TransactionType.EXPENSE);
-        transaction.setCategory(Category.Groceries);
-        transaction.setDate(LocalDateTime.now());
-        transaction.setUser(new User());
 
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
 
@@ -99,16 +92,6 @@ public class TransactionServiceTest {
     @Test
     public void getTransactionSuccessfully() {
         long transactionId = 1L;
-
-        Transaction transaction = new Transaction();
-        transaction.setId(1L);
-        transaction.setDescription("Grocery shopping");
-        transaction.setAmount(50.0);
-        transaction.setTransactionType(TransactionType.EXPENSE);
-        transaction.setCategory(Category.Groceries);
-        transaction.setDate(LocalDateTime.now());
-        transaction.setUser(new User());
-
 
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
 
@@ -136,10 +119,7 @@ public class TransactionServiceTest {
 
     @Test
     void getAllTransactionsSuccessfully() {
-        List<Transaction> transactions = List.of(
-                new Transaction(1L, "Description1", 100.0, TransactionType.EXPENSE, Category.Groceries, LocalDateTime.now(), new User()),
-                new Transaction(2L, "Description2", 200.0, TransactionType.INCOME, Category.Groceries, LocalDateTime.now(), new User())
-        );
+        List<Transaction> transactions = List.of(transaction, transaction2);
 
         List<TransactionResponse> expectedResponses = transactions.stream()
                 .map(transaction -> new TransactionResponse(
@@ -154,7 +134,6 @@ public class TransactionServiceTest {
 
         List<TransactionResponse> actualResponses = transactionService.getAllTransactions();
 
-        // Verification
         assertEquals(expectedResponses.size(), actualResponses.size());
 
         for (int i = 0; i < expectedResponses.size(); i++) {
@@ -182,13 +161,6 @@ public class TransactionServiceTest {
 
     @Test
     public void updateTransactionSuccessfully() {
-        TransactionRequest transactionRequest = new TransactionRequest(
-                1L, "Description1", 100.0,
-                TransactionType.EXPENSE, Category.Groceries);
-
-        Transaction transaction= new Transaction(
-                1L, "Description1", 100.0,
-                TransactionType.EXPENSE, Category.Groceries, LocalDateTime.now(), new User());
 
         Transaction updatedTransaction = new Transaction(1L, "Updated description", 200.0,
                 TransactionType.INCOME, Category.Groceries, LocalDateTime.now(), new User());
@@ -210,9 +182,6 @@ public class TransactionServiceTest {
 
     @Test
     public void updateTransactionTransactionNotFound() {
-        TransactionRequest transactionRequest = new TransactionRequest(
-                1L, "Description1", 100.0,
-                TransactionType.EXPENSE, Category.Groceries);
 
         when(transactionRepository.findById(transactionRequest.id())).thenReturn(Optional.empty());
 
