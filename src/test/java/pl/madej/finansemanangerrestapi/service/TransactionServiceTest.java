@@ -16,6 +16,8 @@ import pl.madej.finansemanangerrestapi.repository.TransactionRepository;
 
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,7 +40,6 @@ public class TransactionServiceTest {
 
     @Test
     public void addTransactionSuccessfully() {
-        // Given
         TransactionRequest transactionRequest = new TransactionRequest(
                 1L, "desc", 100.0, TransactionType.EXPENSE, Category.Groceries
         );
@@ -48,14 +49,11 @@ public class TransactionServiceTest {
             return t;
         });
 
-        // When
         Long savedTransactionId = transactionService.addTransaction(transactionRequest);
 
-        // Then
         assertNotNull(savedTransactionId);
         assertEquals(1L, savedTransactionId.longValue());
 
-        // Verify that save method was called with a Transaction having expected properties
         verify(transactionRepository).save(argThat(trans ->
                 "desc".equals(trans.getDescription()) &&
                         100.0 == trans.getAmount() &&
@@ -89,13 +87,10 @@ public class TransactionServiceTest {
 
     @Test
     public void testDeleteTransactionTransactionNotFound() {
-        // Given
         Long transactionId = 1L;
 
-        // Mock the behavior of the repository
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.empty());
 
-        // When and Then
         assertThrows(RuntimeException.class, () -> transactionService.deleteTransaction(transactionId));
         verify(transactionRepository, times(1)).findById(transactionId);
         verify(transactionRepository, never()).delete(any());
@@ -114,21 +109,19 @@ public class TransactionServiceTest {
         transaction.setDate(LocalDateTime.now());
         transaction.setUser(new User());
 
-        TransactionResponse transactionResponse = new TransactionResponse(
-                transaction.getId(),transaction.getDescription(), transaction.getAmount(), transaction.getTransactionType(), transaction.getCategory());
 
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
 
         TransactionResponse obtainedTransactionResponse = transactionService.getTransaction(transactionId);
 
         verify(transactionRepository, times(1)).findById(transactionId);
-        assertEquals(transaction.getId(), transactionResponse.id());
-        assertNotNull(transactionResponse);
-        assertEquals(transaction.getId(), transactionResponse.id());
-        assertEquals(transaction.getDescription(), transactionResponse.description());
-        assertEquals(transaction.getAmount(), transactionResponse.amount());
-        assertEquals(transaction.getCategory(), transactionResponse.category());
-        assertEquals(transaction.getTransactionType(), transactionResponse.transactionType());
+        assertEquals(transaction.getId(),obtainedTransactionResponse.id());
+        assertNotNull(obtainedTransactionResponse);
+        assertEquals(transaction.getId(), obtainedTransactionResponse.id());
+        assertEquals(transaction.getDescription(), obtainedTransactionResponse.description());
+        assertEquals(transaction.getAmount(), obtainedTransactionResponse.amount());
+        assertEquals(transaction.getCategory(), obtainedTransactionResponse.category());
+        assertEquals(transaction.getTransactionType(), obtainedTransactionResponse.transactionType());
     }
 
     @Test
@@ -141,5 +134,90 @@ public class TransactionServiceTest {
         verify(transactionRepository, times(1)).findById(transactionId);
     }
 
+    @Test
+    void getAllTransactionsSuccessfully() {
+        List<Transaction> transactions = List.of(
+                new Transaction(1L, "Description1", 100.0, TransactionType.EXPENSE, Category.Groceries, LocalDateTime.now(), new User()),
+                new Transaction(2L, "Description2", 200.0, TransactionType.INCOME, Category.Groceries, LocalDateTime.now(), new User())
+        );
 
+        List<TransactionResponse> expectedResponses = transactions.stream()
+                .map(transaction -> new TransactionResponse(
+                        transaction.getId(),
+                        transaction.getDescription(),
+                        transaction.getAmount(),
+                        transaction.getTransactionType(),
+                        transaction.getCategory()
+                )).toList();
+
+        when(transactionRepository.findAll()).thenReturn(transactions);
+
+        List<TransactionResponse> actualResponses = transactionService.getAllTransactions();
+
+        // Verification
+        assertEquals(expectedResponses.size(), actualResponses.size());
+
+        for (int i = 0; i < expectedResponses.size(); i++) {
+            TransactionResponse expected = expectedResponses.get(i);
+            TransactionResponse actual = actualResponses.get(i);
+            assertEquals(expected.id(), actual.id());
+            assertEquals(expected.description(), actual.description());
+            assertEquals(expected.amount(), actual.amount());
+            assertEquals(expected.transactionType(), actual.transactionType());
+        }
+
+        verify(transactionRepository).findAll();
+    }
+
+    @Test
+    public void getAllTransactions_ReturnsEmptyListWhenNoTransactionsExist() {
+        when(transactionRepository.findAll()).thenReturn(Collections.emptyList());
+
+        List<TransactionResponse> actualResponses = transactionService.getAllTransactions();
+
+        assertTrue(actualResponses.isEmpty(), "Expected an empty list of transaction responses");
+
+        verify(transactionRepository).findAll();
+    }
+
+    @Test
+    public void updateTransactionSuccessfully() {
+        TransactionRequest transactionRequest = new TransactionRequest(
+                1L, "Description1", 100.0,
+                TransactionType.EXPENSE, Category.Groceries);
+
+        Transaction transaction= new Transaction(
+                1L, "Description1", 100.0,
+                TransactionType.EXPENSE, Category.Groceries, LocalDateTime.now(), new User());
+
+        Transaction updatedTransaction = new Transaction(1L, "Updated description", 200.0,
+                TransactionType.INCOME, Category.Groceries, LocalDateTime.now(), new User());
+
+        when(transactionRepository.findById(transactionRequest.id())).thenReturn(Optional.of(transaction));
+        when(transactionRepository.save(transaction)).thenReturn(updatedTransaction);
+
+        TransactionResponse transactionResponse = transactionService.updateTransaction(transactionRequest);
+
+        assertNotNull(transactionResponse);
+        assertEquals(transactionResponse.id(), 1L);
+        assertEquals(transactionResponse.description(), "Updated description");
+        assertEquals(transactionResponse.transactionType(), TransactionType.INCOME);
+        assertEquals(transactionResponse.amount(), 200.0);
+
+        verify(transactionRepository).findById(transactionRequest.id());
+        verify(transactionRepository).save(any(Transaction.class));
+    }
+
+    @Test
+    public void updateTransactionTransactionNotFound() {
+        TransactionRequest transactionRequest = new TransactionRequest(
+                1L, "Description1", 100.0,
+                TransactionType.EXPENSE, Category.Groceries);
+
+        when(transactionRepository.findById(transactionRequest.id())).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class,() -> transactionService.updateTransaction(transactionRequest));
+        verify(transactionRepository, times(1)).findById(transactionRequest.id());
+        verify(transactionRepository, times(0)).save(any(Transaction.class));
+    }
 }

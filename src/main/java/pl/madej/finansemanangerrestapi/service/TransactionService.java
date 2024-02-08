@@ -59,4 +59,5 @@ public class TransactionService {
                 .map(transaction -> TransactionMapper.INSTANCE.toTransactionResponse(transaction))
                 .collect(Collectors.toList());
     }
+
 }
