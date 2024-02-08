@@ -2,6 +2,7 @@ package pl.madej.finansemanangerrestapi.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.madej.finansemanangerrestapi.error.TransactionNotFoundException;
 import pl.madej.finansemanangerrestapi.mapper.TransactionMapper;
 import pl.madej.finansemanangerrestapi.model.Transaction;
 import pl.madej.finansemanangerrestapi.model.User;
@@ -30,14 +31,14 @@ public class TransactionService {
 
     public void deleteTransaction(Long transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transaction not found with id " + transactionId));
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with id " + transactionId));
         transactionRepository.delete(transaction);
     }
 
     public TransactionResponse updateTransaction(TransactionRequest transactionRequest) {
 
         Transaction transaction = transactionRepository.findById(transactionRequest.id())
-                .orElseThrow(() -> new RuntimeException("Transaction not found with id " + transactionRequest.id()));
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with id " + transactionRequest.id()));
 
         TransactionMapper.INSTANCE.updateTransactionFromDto(transactionRequest, transaction);
 
@@ -48,7 +49,7 @@ public class TransactionService {
 
     public TransactionResponse getTransaction(Long transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transaction not found with id " + transactionId));
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with id " + transactionId));
 
         return TransactionMapper.INSTANCE.toTransactionResponse(transaction);
     }
