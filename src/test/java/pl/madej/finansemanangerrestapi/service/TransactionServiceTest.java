@@ -168,7 +168,7 @@ public class TransactionServiceTest {
         when(transactionRepository.findById(transactionRequest.id())).thenReturn(Optional.of(transaction));
         when(transactionRepository.save(transaction)).thenReturn(updatedTransaction);
 
-        TransactionResponse transactionResponse = transactionService.updateTransaction(transactionRequest);
+        TransactionResponse transactionResponse = transactionService.updateTransaction(transactionRequest.id(), transactionRequest);
 
         assertNotNull(transactionResponse);
         assertEquals(transactionResponse.id(), 1L);
@@ -185,7 +185,7 @@ public class TransactionServiceTest {
 
         when(transactionRepository.findById(transactionRequest.id())).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class,() -> transactionService.updateTransaction(transactionRequest));
+        assertThrows(RuntimeException.class,() -> transactionService.updateTransaction(transactionRequest.id(),transactionRequest));
         verify(transactionRepository, times(1)).findById(transactionRequest.id());
         verify(transactionRepository, times(0)).save(any(Transaction.class));
     }

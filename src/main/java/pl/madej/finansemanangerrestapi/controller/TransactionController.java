@@ -21,14 +21,14 @@ public class TransactionController {
     public ResponseEntity<TransactionResponse> findTransaction(@PathVariable Long transactionId) {
 
         TransactionResponse response = transactionService.getTransaction(transactionId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
     public ResponseEntity<List<TransactionResponse>> findAllTransactions() {
 
         List<TransactionResponse> transactions = transactionService.getAllTransactions();
-        return ResponseEntity.status(HttpStatus.OK).body(transactions);
+        return ResponseEntity.ok(transactions);
     }
 
     @PostMapping
@@ -39,9 +39,15 @@ public class TransactionController {
     }
 
     @PutMapping("/{transactionId}")
-    public ResponseEntity<TransactionResponse> updateTransaction(@RequestBody TransactionRequest transactionRequest) {
-        TransactionResponse response = transactionService.updateTransaction(transactionRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+    public ResponseEntity<TransactionResponse> updateTransaction(@PathVariable Long transactionId, @RequestBody TransactionRequest transactionRequest) {
+        TransactionResponse response = transactionService.updateTransaction(transactionId, transactionRequest);
+        return ResponseEntity.ok(response);
     }
-    
+
+    @DeleteMapping("/{transactionId}")
+    public ResponseEntity<Void> deleteTransaction(@PathVariable Long transactionId) {
+        transactionService.deleteTransaction(transactionId);
+
+        return ResponseEntity.noContent().build();
+    }
 }

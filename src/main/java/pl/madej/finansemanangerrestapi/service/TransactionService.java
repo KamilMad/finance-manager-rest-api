@@ -35,9 +35,9 @@ public class TransactionService {
         transactionRepository.delete(transaction);
     }
 
-    public TransactionResponse updateTransaction(TransactionRequest transactionRequest) {
+    public TransactionResponse updateTransaction(Long transactionId, TransactionRequest transactionRequest) {
 
-        Transaction transaction = transactionRepository.findById(transactionRequest.id())
+        Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with id " + transactionRequest.id()));
 
         TransactionMapper.INSTANCE.updateTransactionFromDto(transactionRequest, transaction);
