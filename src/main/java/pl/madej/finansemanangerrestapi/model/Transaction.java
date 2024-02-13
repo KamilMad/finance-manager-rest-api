@@ -26,7 +26,8 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
-    @ManyToOne
+    //@ManyToOne
+    @Enumerated(EnumType.STRING)
     private Category category;
 
     private LocalDateTime date;
