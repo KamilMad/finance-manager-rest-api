@@ -6,12 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.madej.finansemanangerrestapi.model.Category;
+import pl.madej.finansemanangerrestapi.model.enums.Category;
 import pl.madej.finansemanangerrestapi.model.Transaction;
-import pl.madej.finansemanangerrestapi.model.TransactionType;
+import pl.madej.finansemanangerrestapi.model.enums.TransactionType;
 import pl.madej.finansemanangerrestapi.model.User;
-import pl.madej.finansemanangerrestapi.payload.TransactionRequest;
-import pl.madej.finansemanangerrestapi.payload.TransactionResponse;
+import pl.madej.finansemanangerrestapi.payload.transaction.TransactionRequest;
+import pl.madej.finansemanangerrestapi.payload.transaction.TransactionResponse;
 import pl.madej.finansemanangerrestapi.repository.TransactionRepository;
 
 

@@ -1,4 +1,4 @@
-package pl.madej.finansemanangerrestapi.payload;
+package pl.madej.finansemanangerrestapi.payload.security;
 
 public record RegisterRequest(
         String username,

@@ -6,8 +6,8 @@ import pl.madej.finansemanangerrestapi.error.TransactionNotFoundException;
 import pl.madej.finansemanangerrestapi.mapper.TransactionMapper;
 import pl.madej.finansemanangerrestapi.model.Transaction;
 import pl.madej.finansemanangerrestapi.model.User;
-import pl.madej.finansemanangerrestapi.payload.TransactionRequest;
-import pl.madej.finansemanangerrestapi.payload.TransactionResponse;
+import pl.madej.finansemanangerrestapi.payload.transaction.TransactionRequest;
+import pl.madej.finansemanangerrestapi.payload.transaction.TransactionResponse;
 import pl.madej.finansemanangerrestapi.repository.TransactionRepository;
 
 import java.time.LocalDateTime;

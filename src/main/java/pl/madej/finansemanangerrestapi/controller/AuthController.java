@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.madej.finansemanangerrestapi.payload.AuthenticationRequest;
-import pl.madej.finansemanangerrestapi.payload.AuthenticationResponse;
-import pl.madej.finansemanangerrestapi.payload.RegisterRequest;
+import pl.madej.finansemanangerrestapi.payload.security.AuthenticationRequest;
+import pl.madej.finansemanangerrestapi.payload.security.AuthenticationResponse;
+import pl.madej.finansemanangerrestapi.payload.security.RegisterRequest;
 import pl.madej.finansemanangerrestapi.service.AuthenticationService;
 
 @RestController

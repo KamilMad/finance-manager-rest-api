@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pl.madej.finansemanangerrestapi.model.enums.Category;
+import pl.madej.finansemanangerrestapi.model.enums.TransactionType;
 
 import java.time.LocalDateTime;
 

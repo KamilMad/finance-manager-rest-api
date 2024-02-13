@@ -1,4 +1,4 @@
-package pl.madej.finansemanangerrestapi.model;
+package pl.madej.finansemanangerrestapi.model.enums;
 
 
 public enum Category {

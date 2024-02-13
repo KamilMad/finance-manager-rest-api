@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.madej.finansemanangerrestapi.payload.TransactionRequest;
-import pl.madej.finansemanangerrestapi.payload.TransactionResponse;
+import pl.madej.finansemanangerrestapi.payload.transaction.TransactionRequest;
+import pl.madej.finansemanangerrestapi.payload.transaction.TransactionResponse;
 import pl.madej.finansemanangerrestapi.service.TransactionService;
 
 import java.util.List;

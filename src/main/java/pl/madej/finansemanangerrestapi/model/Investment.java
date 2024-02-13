@@ -1,6 +1,7 @@
 package pl.madej.finansemanangerrestapi.model;
 
 import jakarta.persistence.*;
+import pl.madej.finansemanangerrestapi.model.enums.InvestmentType;
 
 @Entity
 public class Investment {
