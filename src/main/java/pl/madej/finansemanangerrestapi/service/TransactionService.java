@@ -30,9 +30,9 @@ public class TransactionService {
     }
 
     public void deleteTransaction(Long transactionId) {
-        Transaction transaction = transactionRepository.findById(transactionId)
+        transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with id " + transactionId));
-        transactionRepository.delete(transaction);
+        transactionRepository.deleteById(transactionId);
     }
 
     public TransactionResponse updateTransaction(Long transactionId, TransactionRequest transactionRequest) {

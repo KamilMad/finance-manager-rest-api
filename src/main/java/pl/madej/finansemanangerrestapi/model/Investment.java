@@ -1,9 +1,13 @@
 package pl.madej.finansemanangerrestapi.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import pl.madej.finansemanangerrestapi.model.enums.InvestmentType;
 
 @Entity
+@Getter
+@Setter
 public class Investment {
 
     @Id
