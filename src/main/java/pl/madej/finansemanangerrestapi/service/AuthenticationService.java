@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.madej.finansemanangerrestapi.model.Role;
 import pl.madej.finansemanangerrestapi.payload.AuthenticationRequest;
 import pl.madej.finansemanangerrestapi.payload.AuthenticationResponse;
 import pl.madej.finansemanangerrestapi.payload.RegisterRequest;
@@ -15,9 +14,6 @@ import pl.madej.finansemanangerrestapi.repository.UserRepository;
 import pl.madej.finansemanangerrestapi.security.JwtService;
 import pl.madej.finansemanangerrestapi.model.User;
 import pl.madej.finansemanangerrestapi.security.JwtUserDetails;
-
-import java.util.Collections;
-import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +29,6 @@ public class AuthenticationService {
         User user = new User();
         user.setUsername(registerRequest.username());
         user.setEmail(registerRequest.email());
-        HashSet roles = new HashSet();
-        roles.add(Role.USER);
-        user.setRoles(roles);
 
         user.setPassword(passwordEncoder.encode(registerRequest.password()));
 

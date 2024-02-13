@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import pl.madej.finansemanangerrestapi.model.User;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -18,8 +20,8 @@ public class JwtUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRoles().stream().map(role ->
-                new SimpleGrantedAuthority(role.name())).collect(Collectors.toSet());
+
+        return Set.of(new SimpleGrantedAuthority("USER"));
     }
 
     @Override
