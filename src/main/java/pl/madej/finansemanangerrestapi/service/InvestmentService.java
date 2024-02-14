@@ -10,7 +10,6 @@ import pl.madej.finansemanangerrestapi.payload.investment.InvestmentRequest;
 import pl.madej.finansemanangerrestapi.payload.investment.InvestmentResponse;
 import pl.madej.finansemanangerrestapi.repository.InvestmentRepository;
 
-import javax.swing.text.IconView;
 import java.util.List;
 import java.util.stream.Collectors;
 
