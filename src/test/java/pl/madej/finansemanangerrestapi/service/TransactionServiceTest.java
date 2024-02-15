@@ -75,7 +75,7 @@ public class TransactionServiceTest {
         transactionService.deleteTransaction(transactionId);
 
         verify(transactionRepository, times(1)).findById(transactionId);
-        verify(transactionRepository, times(1)).delete(transaction);
+        verify(transactionRepository, times(1)).deleteById(transactionId);
     }
 
     @Test
