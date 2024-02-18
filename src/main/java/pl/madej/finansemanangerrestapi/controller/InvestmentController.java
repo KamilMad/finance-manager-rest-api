@@ -7,7 +7,6 @@ import pl.madej.finansemanangerrestapi.payload.investment.InvestmentRequest;
 import pl.madej.finansemanangerrestapi.payload.investment.InvestmentResponse;
 import pl.madej.finansemanangerrestapi.service.InvestmentService;
 
-import javax.crypto.spec.IvParameterSpec;
 import java.util.List;
 
 @RestController

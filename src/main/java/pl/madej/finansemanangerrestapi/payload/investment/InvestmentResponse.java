@@ -1,11 +1,17 @@
 package pl.madej.finansemanangerrestapi.payload.investment;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import pl.madej.finansemanangerrestapi.model.enums.InvestmentType;
 
-public record InvestmentResponse(
-        InvestmentType type,
-        int quantity,
-        double purchasePrice,
-        double currentUserPrice
-) {
+@Getter
+@Setter
+@AllArgsConstructor
+public class InvestmentResponse {
+    private Long id;
+    private InvestmentType type;
+    private int quantity;
+    private double purchasePrice;
+    private double currentUserPrice;
 }

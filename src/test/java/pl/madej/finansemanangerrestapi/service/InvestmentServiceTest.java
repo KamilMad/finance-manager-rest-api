@@ -1,7 +1,5 @@
 package pl.madej.finansemanangerrestapi.service;
 
-import net.bytebuddy.dynamic.loading.InjectionClassLoader;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,11 +32,11 @@ public class InvestmentServiceTest {
 
     private Investment investment;
     private InvestmentRequest investmentRequest;
-    private InvestmentResponse investmentResponse;
 
     @BeforeEach
     public void init() {
         investment = new Investment();
+        investment.setId(1L);
         investment.setType(InvestmentType.STOCK);
         investment.setQuantity(10);
         investment.setPurchasePrice(100.0);
@@ -46,18 +44,13 @@ public class InvestmentServiceTest {
         investment.setUser(new User());
 
         investmentRequest = new InvestmentRequest(
+                1L,
                 InvestmentType.STOCK,
                 10,
                 100.0,
                 150.0
         );
 
-        investmentResponse = new InvestmentResponse(
-                InvestmentType.STOCK,
-                10,
-                100.0,
-                150.0
-        );
     }
 
 
@@ -104,6 +97,32 @@ public class InvestmentServiceTest {
         assertThrows(InvestmentNotFoundException.class, () -> investmentService.deleteInvestment(investmentId));
         verify(investmentRepository, times(1)).findById(investmentId);
         verify(investmentRepository, times(0)).deleteById(investmentId);
+
+    }
+
+    @Test
+    public void updateInvestmentSuccessfully() {
+        Investment updatedInvestment = new Investment();
+        updatedInvestment.setId(1L);
+        updatedInvestment.setType(InvestmentType.STOCK);
+        updatedInvestment.setQuantity(50);
+        updatedInvestment.setPurchasePrice(100.0);
+        updatedInvestment.setCurrentUserPrice(170.0);
+        updatedInvestment.setUser(new User());
+
+        when(investmentRepository.findById(investment.getId())).thenReturn(Optional.of(investment));
+        when(investmentRepository.save(investment)).thenReturn(updatedInvestment);
+
+        InvestmentResponse investmentResponse = investmentService.updateInvestment(investmentRequest.getId(), investmentRequest);
+
+        assertNotNull(investmentResponse);
+        assertEquals(investmentResponse.getId(), updatedInvestment.getId());
+        assertEquals(investmentResponse.getQuantity(), updatedInvestment.getQuantity());
+        assertEquals(investmentResponse.getPurchasePrice(), updatedInvestment.getPurchasePrice());
+        assertEquals(investmentResponse.getCurrentUserPrice(), updatedInvestment.getCurrentUserPrice());
+
+        verify(investmentRepository, times(1)).findById(investment.getId());
+        verify(investmentRepository, times(1)).save(investment);
 
     }
 }
