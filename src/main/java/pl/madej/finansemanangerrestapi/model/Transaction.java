@@ -35,7 +35,7 @@ public class Transaction {
     private LocalDateTime date;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "user_id")
     private User User;
 
 }

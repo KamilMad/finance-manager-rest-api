@@ -31,9 +31,7 @@ public class TransactionService {
         transaction.setDate(LocalDateTime.now());
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
         User loggedUser = userService.getUserByUsername(username);
-
         transaction.setUser(loggedUser);
 
         return transactionRepository.save(transaction).getId();
@@ -43,20 +41,20 @@ public class TransactionService {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with id " + transactionId));
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User loggedUser = userService.getUserByUsername(username);
+        //checks if user is owner of transaction
+        validateTransactionOwnership(transaction);
 
-        if (!transaction.getUser().equals(loggedUser)) {
-            throw new UnauthorizedAccessException("User does not have permission to delete this transaction.");
-        }
-
-            transactionRepository.deleteById(transactionId);
+        transactionRepository.deleteById(transactionId);
     }
+
 
     public TransactionResponse updateTransaction(Long transactionId, TransactionRequest transactionRequest) {
 
         Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with id " + transactionRequest.id()));
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with id " + transactionId));
+
+        //checks if user is owner of transaction
+        validateTransactionOwnership(transaction);
 
         TransactionMapper.INSTANCE.updateTransactionFromDto(transactionRequest, transaction);
 
@@ -75,8 +73,17 @@ public class TransactionService {
     public List<TransactionResponse> getAllTransactions() {
         return transactionRepository.findAll()
                 .stream()
-                .map(transaction -> TransactionMapper.INSTANCE.toTransactionResponse(transaction))
+                .map(TransactionMapper.INSTANCE::toTransactionResponse)
                 .collect(Collectors.toList());
+    }
+
+    private void validateTransactionOwnership(Transaction transaction) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User loggedUser = userService.getUserByUsername(username);
+
+        if (!transaction.getUser().equals(loggedUser)) {
+            throw new UnauthorizedAccessException("User does not have permission to delete this transaction.");
+        }
     }
 
 }
