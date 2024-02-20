@@ -131,7 +131,23 @@ public class InvestmentServiceTest {
         when(investmentRepository.findById(any())).thenReturn(Optional.empty());
 
         assertThrows(InvestmentNotFoundException.class,() -> investmentService.updateInvestment(investmentRequest.getId(), investmentRequest));
-        verify(investmentRepository, times(1)).findById(anyLong());
+        verify(investmentRepository, times(1)).findById(investmentRequest.getId());
         verify(investmentRepository, times(0)).save(any(Investment.class));
+    }
+
+    @Test
+    public void getInvestmentSuccessfully() {
+
+        when(investmentRepository.findById(investment.getId())).thenReturn(Optional.of(investment));
+
+        InvestmentResponse obtainedTransactionResponse = investmentService.getInvestment(investment.getId());
+
+        verify(investmentRepository, times(1)).findById(investment.getId());
+        assertNotNull(obtainedTransactionResponse);
+        assertEquals(investment.getId(), obtainedTransactionResponse.getId());
+        assertEquals(investment.getCurrentUserPrice(), obtainedTransactionResponse.getCurrentUserPrice());
+        assertEquals(investment.getPurchasePrice(), obtainedTransactionResponse.getPurchasePrice());
+        assertEquals(investment.getQuantity(), obtainedTransactionResponse.getQuantity());
+        assertEquals(investment.getType(), obtainedTransactionResponse.getType());
     }
 }
