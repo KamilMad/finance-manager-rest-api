@@ -14,7 +14,9 @@ import pl.madej.finansemanangerrestapi.payload.investment.InvestmentRequest;
 import pl.madej.finansemanangerrestapi.payload.investment.InvestmentResponse;
 import pl.madej.finansemanangerrestapi.repository.InvestmentRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,17 +33,13 @@ public class InvestmentServiceTest {
     private InvestmentService investmentService;
 
     private Investment investment;
+    private Investment investment2;
     private InvestmentRequest investmentRequest;
 
     @BeforeEach
     public void init() {
-        investment = new Investment();
-        investment.setId(1L);
-        investment.setType(InvestmentType.STOCK);
-        investment.setQuantity(10);
-        investment.setPurchasePrice(100.0);
-        investment.setCurrentUserPrice(150.0);
-        investment.setUser(new User());
+        investment = new Investment(1L, InvestmentType.STOCK, 10, 100.0, 150.0, new User());
+        investment2 = new Investment(2L, InvestmentType.STOCK, 30, 80.0, 50.0, new User());
 
         investmentRequest = new InvestmentRequest(
                 1L,
@@ -149,5 +147,42 @@ public class InvestmentServiceTest {
         assertEquals(investment.getPurchasePrice(), obtainedTransactionResponse.getPurchasePrice());
         assertEquals(investment.getQuantity(), obtainedTransactionResponse.getQuantity());
         assertEquals(investment.getType(), obtainedTransactionResponse.getType());
+    }
+
+    @Test
+    public void getInvestmentNotFound() {
+
+        when(investmentRepository.findById(investment.getId())).thenReturn(Optional.empty());
+        assertThrows(InvestmentNotFoundException.class, () -> investmentService.getInvestment(investmentRequest.getId()));
+        verify(investmentRepository, times(1)).findById(investmentRequest.getId());
+    }
+
+    @Test
+    public void getAllInvestmentsSuccessfully() {
+        List<Investment> investments = List.of(investment, investment2);
+
+        List<InvestmentResponse> expectedResponses = investments.stream()
+                .map(inv -> new InvestmentResponse(
+                        inv.getId(),
+                        inv.getType(),
+                        inv.getQuantity(),
+                        inv.getPurchasePrice(),
+                        inv.getCurrentUserPrice()))
+                .toList();
+
+        when(investmentRepository.findAll()).thenReturn(investments);
+        List<InvestmentResponse> actualResponses = investmentService.getAllInvestment();
+
+        for (int i = 0; i<expectedResponses.size(); i++) {
+            InvestmentResponse expected = expectedResponses.get(i);
+            InvestmentResponse actual = actualResponses.get(i);
+            assertEquals(expected.getId(), actual.getId());
+            assertEquals(expected.getType(), actual.getType());
+            assertEquals(expected.getPurchasePrice(), actual.getPurchasePrice());
+            assertEquals(expected.getCurrentUserPrice(), actual.getCurrentUserPrice());
+            assertEquals(expected.getQuantity(), actual.getQuantity());
+        }
+
+        verify(investmentRepository, times(1)).findAll();
     }
 }
