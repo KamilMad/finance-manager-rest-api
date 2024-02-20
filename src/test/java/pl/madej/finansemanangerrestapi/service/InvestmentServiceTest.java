@@ -14,6 +14,7 @@ import pl.madej.finansemanangerrestapi.payload.investment.InvestmentRequest;
 import pl.madej.finansemanangerrestapi.payload.investment.InvestmentResponse;
 import pl.madej.finansemanangerrestapi.repository.InvestmentRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -183,6 +184,17 @@ public class InvestmentServiceTest {
             assertEquals(expected.getQuantity(), actual.getQuantity());
         }
 
+        verify(investmentRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void getAllIInvestmentEmptyList() {
+
+        when(investmentRepository.findAll()).thenReturn(Collections.emptyList());
+
+        List<InvestmentResponse> actualResponses = investmentService.getAllInvestment();
+
+        assertTrue(actualResponses.isEmpty());
         verify(investmentRepository, times(1)).findAll();
     }
 }
