@@ -125,4 +125,13 @@ public class InvestmentServiceTest {
         verify(investmentRepository, times(1)).save(investment);
 
     }
+
+    @Test
+    public void updateInvestmentNotFound() {
+        when(investmentRepository.findById(any())).thenReturn(Optional.empty());
+
+        assertThrows(InvestmentNotFoundException.class,() -> investmentService.updateInvestment(investmentRequest.getId(), investmentRequest));
+        verify(investmentRepository, times(1)).findById(anyLong());
+        verify(investmentRepository, times(0)).save(any(Investment.class));
+    }
 }
