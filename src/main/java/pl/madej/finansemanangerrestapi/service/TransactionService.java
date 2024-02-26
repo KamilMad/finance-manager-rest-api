@@ -11,11 +11,9 @@ import pl.madej.finansemanangerrestapi.model.User;
 import pl.madej.finansemanangerrestapi.payload.transaction.TransactionRequest;
 import pl.madej.finansemanangerrestapi.payload.transaction.TransactionResponse;
 import pl.madej.finansemanangerrestapi.repository.TransactionRepository;
-import pl.madej.finansemanangerrestapi.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

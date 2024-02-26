@@ -1,11 +1,17 @@
 package pl.madej.finansemanangerrestapi.service;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import pl.madej.finansemanangerrestapi.model.enums.Category;
 import pl.madej.finansemanangerrestapi.model.Transaction;
 import pl.madej.finansemanangerrestapi.model.enums.TransactionType;
@@ -29,6 +35,8 @@ public class TransactionServiceTest {
 
     @Mock
     private TransactionRepository transactionRepository;
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private TransactionService transactionService;
@@ -36,11 +44,24 @@ public class TransactionServiceTest {
     private Transaction transaction;
     private Transaction transaction2;
     private TransactionRequest transactionRequest;
+    private User user;
+
     @BeforeEach
     public void init() {
-        transaction = new Transaction(1L, "Description1", 100.0, TransactionType.EXPENSE, Category.Groceries, LocalDateTime.now(), new User());
-        transaction2 = new Transaction(2L, "Description2", 200.0, TransactionType.INCOME, Category.Groceries, LocalDateTime.now(), new User());
-        transactionRequest = new TransactionRequest(1L, "Description", 100.0, TransactionType.EXPENSE, Category.Groceries);
+        user = new User(1L, "username", "password", "email", Collections.emptyList(), Collections.emptyList());
+
+        transaction = new Transaction(1L, "Description1", 100.0, TransactionType.EXPENSE, Category.Groceries, LocalDateTime.now(), user);
+        transaction2 = new Transaction(2L, "Description2", 200.0, TransactionType.INCOME, Category.Groceries, LocalDateTime.now(), user);
+        transactionRequest = new TransactionRequest( "Description", 100.0, TransactionType.EXPENSE, Category.Groceries);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        SecurityContextHolder.setContext(context);
+    }
+
+    @AfterEach
+    void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -50,6 +71,8 @@ public class TransactionServiceTest {
             t.setId(1L); // Simulate setting ID upon saving
             return t;
         });
+
+        when(userService.getUserByUsername("username")).thenReturn(user);
 
         Long savedTransactionId = transactionService.addTransaction(transactionRequest);
 
@@ -70,7 +93,9 @@ public class TransactionServiceTest {
     public void deleteTransactionSuccessfully() {
         long transactionId = 1L;
 
+        when(userService.getUserByUsername("username")).thenReturn(user);
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
+
 
         transactionService.deleteTransaction(transactionId);
 
@@ -165,10 +190,11 @@ public class TransactionServiceTest {
         Transaction updatedTransaction = new Transaction(1L, "Updated description", 200.0,
                 TransactionType.INCOME, Category.Groceries, LocalDateTime.now(), new User());
 
-        when(transactionRepository.findById(transactionRequest.id())).thenReturn(Optional.of(transaction));
+        when(transactionRepository.findById(1L)).thenReturn(Optional.of(transaction));
         when(transactionRepository.save(transaction)).thenReturn(updatedTransaction);
+        when(userService.getUserByUsername("username")).thenReturn(user);
 
-        TransactionResponse transactionResponse = transactionService.updateTransaction(transactionRequest.id(), transactionRequest);
+        TransactionResponse transactionResponse = transactionService.updateTransaction(1L, transactionRequest);
 
         assertNotNull(transactionResponse);
         assertEquals(transactionResponse.id(), 1L);
@@ -176,17 +202,17 @@ public class TransactionServiceTest {
         assertEquals(transactionResponse.transactionType(), TransactionType.INCOME);
         assertEquals(transactionResponse.amount(), 200.0);
 
-        verify(transactionRepository).findById(transactionRequest.id());
+        verify(transactionRepository).findById(1L);
         verify(transactionRepository).save(any(Transaction.class));
     }
 
     @Test
     public void updateTransactionTransactionNotFound() {
 
-        when(transactionRepository.findById(transactionRequest.id())).thenReturn(Optional.empty());
+        when(transactionRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class,() -> transactionService.updateTransaction(transactionRequest.id(),transactionRequest));
-        verify(transactionRepository, times(1)).findById(transactionRequest.id());
+        assertThrows(RuntimeException.class,() -> transactionService.updateTransaction(1L,transactionRequest));
+        verify(transactionRepository, times(1)).findById(1L);
         verify(transactionRepository, times(0)).save(any(Transaction.class));
     }
 }
