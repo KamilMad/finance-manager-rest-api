@@ -10,6 +10,7 @@ import pl.madej.finansemanangerrestapi.payload.investment.InvestmentRequest;
 import pl.madej.finansemanangerrestapi.payload.investment.InvestmentResponse;
 import pl.madej.finansemanangerrestapi.repository.InvestmentRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,5 @@ public class InvestmentService {
                 .map(investment -> InvestmentMapper.INSTANCE.toInvestmentResponse(investment))
                 .collect(Collectors.toList());
     }
-
 
 }
