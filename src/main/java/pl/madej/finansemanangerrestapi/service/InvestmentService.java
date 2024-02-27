@@ -1,6 +1,7 @@
 package pl.madej.finansemanangerrestapi.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import pl.madej.finansemanangerrestapi.error.InvestmentNotFoundException;
 import pl.madej.finansemanangerrestapi.mapper.InvestmentMapper;
@@ -19,11 +20,13 @@ import java.util.stream.Collectors;
 public class InvestmentService {
 
     private final InvestmentRepository repository;
+    private final UserService userService;
 
     public Long addInvestment(InvestmentRequest investmentRequest) {
 
         Investment investment = InvestmentMapper.INSTANCE.toInvestment(investmentRequest);
-        investment.setUser(new User());
+        User user = getAuthenticatedUser();
+        investment.setUser(user);
 
         return repository.save(investment).getId();
     }
@@ -62,6 +65,12 @@ public class InvestmentService {
                 .stream()
                 .map(investment -> InvestmentMapper.INSTANCE.toInvestmentResponse(investment))
                 .collect(Collectors.toList());
+    }
+
+    private User getAuthenticatedUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.getUserByUsername(username);
+
     }
 
 }

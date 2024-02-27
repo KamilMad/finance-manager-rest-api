@@ -43,7 +43,6 @@ public class InvestmentServiceTest {
         investment2 = new Investment(2L, InvestmentType.STOCK, 30, 80.0, 50.0, new User());
 
         investmentRequest = new InvestmentRequest(
-                1L,
                 InvestmentType.STOCK,
                 10,
                 100.0,

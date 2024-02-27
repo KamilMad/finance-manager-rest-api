@@ -26,9 +26,9 @@ public class User {
     private String password;
     private String email;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     private List<Transaction> transactions;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     private List<Investment> investments;
 }

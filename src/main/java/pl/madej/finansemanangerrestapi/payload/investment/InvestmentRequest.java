@@ -9,7 +9,6 @@ import pl.madej.finansemanangerrestapi.model.enums.InvestmentType;
 @Setter
 @AllArgsConstructor
 public class InvestmentRequest {
-    private long id;
     private InvestmentType type;
     private int quantity;
     private double purchasePrice;

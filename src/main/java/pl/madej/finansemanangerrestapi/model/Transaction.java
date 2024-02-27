@@ -36,6 +36,6 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User User;
+    private User user;
 
 }
