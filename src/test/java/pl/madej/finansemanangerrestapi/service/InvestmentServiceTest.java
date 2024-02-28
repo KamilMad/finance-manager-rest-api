@@ -6,6 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import pl.madej.finansemanangerrestapi.error.InvestmentNotFoundException;
 import pl.madej.finansemanangerrestapi.model.Investment;
 import pl.madej.finansemanangerrestapi.model.User;
@@ -29,18 +32,25 @@ public class InvestmentServiceTest {
 
     @Mock
     private InvestmentRepository investmentRepository;
-
+    @Mock
+    private UserService userService;
     @InjectMocks
     private InvestmentService investmentService;
 
     private Investment investment;
     private Investment investment2;
     private InvestmentRequest investmentRequest;
+    private final Long investmentId = 1L;
+
+    private User user;
+
 
     @BeforeEach
     public void init() {
-        investment = new Investment(1L, InvestmentType.STOCK, 10, 100.0, 150.0, new User());
-        investment2 = new Investment(2L, InvestmentType.STOCK, 30, 80.0, 50.0, new User());
+        user = new User(1L, "username", "password", "email", Collections.emptyList(), Collections.emptyList());
+
+        investment = new Investment(1L, InvestmentType.STOCK, 10, 100.0, 150.0, user);
+        investment2 = new Investment(2L, InvestmentType.STOCK, 30, 80.0, 50.0, user);
 
         investmentRequest = new InvestmentRequest(
                 InvestmentType.STOCK,
@@ -48,6 +58,10 @@ public class InvestmentServiceTest {
                 100.0,
                 150.0
         );
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        SecurityContextHolder.setContext(context);
 
     }
 
@@ -61,6 +75,7 @@ public class InvestmentServiceTest {
             return inv;
         });
 
+        when(userService.getUserByUsername("username")).thenReturn(user);
         Long savedInvestmentId = investmentService.addInvestment(investmentRequest);
 
         assertNotNull(savedInvestmentId);
@@ -100,6 +115,7 @@ public class InvestmentServiceTest {
 
     @Test
     public void updateInvestmentSuccessfully() {
+
         Investment updatedInvestment = new Investment();
         updatedInvestment.setId(1L);
         updatedInvestment.setType(InvestmentType.STOCK);
@@ -111,7 +127,7 @@ public class InvestmentServiceTest {
         when(investmentRepository.findById(investment.getId())).thenReturn(Optional.of(investment));
         when(investmentRepository.save(investment)).thenReturn(updatedInvestment);
 
-        InvestmentResponse investmentResponse = investmentService.updateInvestment(investmentRequest.getId(), investmentRequest);
+        InvestmentResponse investmentResponse = investmentService.updateInvestment(investmentId, investmentRequest);
 
         assertNotNull(investmentResponse);
         assertEquals(investmentResponse.getId(), updatedInvestment.getId());
@@ -128,8 +144,8 @@ public class InvestmentServiceTest {
     public void updateInvestmentNotFound() {
         when(investmentRepository.findById(any())).thenReturn(Optional.empty());
 
-        assertThrows(InvestmentNotFoundException.class,() -> investmentService.updateInvestment(investmentRequest.getId(), investmentRequest));
-        verify(investmentRepository, times(1)).findById(investmentRequest.getId());
+        assertThrows(InvestmentNotFoundException.class,() -> investmentService.updateInvestment(investmentId, investmentRequest));
+        verify(investmentRepository, times(1)).findById(investmentId);
         verify(investmentRepository, times(0)).save(any(Investment.class));
     }
 
@@ -153,8 +169,8 @@ public class InvestmentServiceTest {
     public void getInvestmentNotFound() {
 
         when(investmentRepository.findById(investment.getId())).thenReturn(Optional.empty());
-        assertThrows(InvestmentNotFoundException.class, () -> investmentService.getInvestment(investmentRequest.getId()));
-        verify(investmentRepository, times(1)).findById(investmentRequest.getId());
+        assertThrows(InvestmentNotFoundException.class, () -> investmentService.getInvestment(investmentId));
+        verify(investmentRepository, times(1)).findById(investmentId);
     }
 
     @Test

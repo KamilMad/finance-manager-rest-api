@@ -44,6 +44,6 @@ public class PortfolioService {
     private User getAuthenticatedUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userService.getUserByUsername(username);
-
     }
+
 }
