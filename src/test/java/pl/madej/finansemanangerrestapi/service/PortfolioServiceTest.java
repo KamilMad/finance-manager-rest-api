@@ -17,6 +17,10 @@ import pl.madej.finansemanangerrestapi.model.enums.InvestmentType;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PortfolioServiceTest {
@@ -37,6 +41,31 @@ public class PortfolioServiceTest {
         context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         SecurityContextHolder.setContext(context);
 
+        investments = createTestInvestments();
+        user.setInvestments(investments);
+    }
+
+    @Test
+    public void calculateAggregatePortfolioValueSuccessful() {
+
+        when(userService.getUserByUsername("username")).thenReturn(user);
+        double sum = portfolioService.calculateAggregatePortfolioValue();
+        assertEquals(15000.0, sum);
+
+    }
+
+    @Test
+    public void calculateGroupedPortfolioValue() {
+        when(userService.getUserByUsername("username")).thenReturn(user);
+        Map<InvestmentType, Double> groupedPortfolioValue = portfolioService.calculateGroupedPortfolioValue();
+
+        assertEquals(6000.0, groupedPortfolioValue.get(InvestmentType.STOCK));
+        assertEquals(4000.0, groupedPortfolioValue.get(InvestmentType.BOND));
+        assertEquals(5000.0, groupedPortfolioValue.get(InvestmentType.CRYPTOCURRENCY));
+
+    }
+
+    public List<Investment> createTestInvestments() {
         Investment investment1 = new Investment();
         investment1.setId(1L);
         investment1.setType(InvestmentType.STOCK);
@@ -77,17 +106,6 @@ public class PortfolioServiceTest {
         investment5.setCurrentUserPrice(500.00);
         investment5.setUser(user);
 
-        investments = List.of(investment1, investment2, investment3, investment4, investment5);
-        user.setInvestments(investments);
-    }
-
-    @Test
-    public void calculateAggregatePortfolioValueSuccessful() {
-
-        Mockito.when(userService.getUserByUsername("username")).thenReturn(user);
-        double sum = portfolioService.calculateAggregatePortfolioValue();
-
-        Assertions.assertEquals(15000.0, sum);
-
+        return List.of(investment1, investment2, investment3, investment4, investment5);
     }
 }

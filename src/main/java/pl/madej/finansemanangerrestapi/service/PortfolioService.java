@@ -35,7 +35,7 @@ public class PortfolioService {
         return user.getInvestments()
                 .stream()
                 .collect(Collectors.groupingBy(Investment::getType,
-                        Collectors.summingDouble(Investment::getCurrentUserPrice)));
+                        Collectors.summingDouble(investment -> investment.getCurrentUserPrice() * investment.getQuantity())));
 
     }
 
