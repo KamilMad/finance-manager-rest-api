@@ -16,8 +16,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PortfolioService {
-
-    private final InvestmentService investmentService;
     private final UserService userService;
 
     public double calculateAggregatePortfolioValue() {
@@ -26,7 +24,7 @@ public class PortfolioService {
 
         return user.getInvestments()
                 .stream()
-                .mapToDouble(Investment::getCurrentUserPrice)
+                .mapToDouble(investment -> investment.getCurrentUserPrice() * investment.getQuantity())
                 .sum();
     }
 
