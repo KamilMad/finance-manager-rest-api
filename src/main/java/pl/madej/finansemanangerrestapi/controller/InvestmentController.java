@@ -50,4 +50,10 @@ public class InvestmentController {
         return ResponseEntity.ok(investmentResponse);
     }
 
+    @GetMapping("/{investmentId}/performance")
+    public ResponseEntity<String> investmentROI(@PathVariable Long id) {
+
+        return null;
+    }
+
 }
