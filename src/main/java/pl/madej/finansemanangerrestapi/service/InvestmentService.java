@@ -13,6 +13,7 @@ import pl.madej.finansemanangerrestapi.repository.InvestmentRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,6 +71,19 @@ public class InvestmentService {
     private User getAuthenticatedUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userService.getUserByUsername(username);
+
+    }
+
+    private void calculateROI(Long investmentId) {
+        User user = getAuthenticatedUser();
+
+        Investment investment = user.getInvestments().stream().filter(e -> e.getId() == investmentId).findFirst().orElseThrow(()
+                -> new InvestmentNotFoundException("Investment with id " + investmentId + " not found"));
+
+        investment.getType()
+
+
+
 
     }
 
